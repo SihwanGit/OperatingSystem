@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MLFQ.c">
+    <ClCompile Include="김시환2021111935_운영체제 1차 과제_MLFQ.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

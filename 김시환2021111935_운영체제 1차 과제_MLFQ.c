@@ -29,7 +29,7 @@ typedef struct Process {
     int cpu_executed;        // 지금까지 실제로 사용한 CPU 시간
     int queue_level;         // 1, 2, 3
     int quantum_used;        // 현재 queue level에서 사용한 time slice
-    int entered_queue_time;  // q2/q3에 들어간 시각(boost 계산용)
+    int entered_queue_time;  // q1/q2/q3에 들어간 시각(boost 계산용)
 
     // 상태 플래그
     int admitted;            // ready queue에 처음 들어왔는지
@@ -153,13 +153,15 @@ Process* selectNextProcess(Queue* q1, Queue* q2, Queue* q3) {
 // q2, q3의 boost 처리
 void boostProcesses(Queue* from, Queue* q1, int current_time) {
     Process* prev = NULL;
-    Process* curr = from->head;
+    Process* curr = from->head; 
+    //부스팅하고자 하는 Q의 head와 연결
 
     while (curr != NULL) {
         Process* next = curr->next;
 
         // q2/q3에서 50 이상 기다렸으면 q1으로 boost
-        if (current_time - curr->entered_queue_time >= BOOST_TIME) {
+        if (current_time - curr->entered_queue_time >= BOOST_TIME) { 
+            //만약 현재시간 - 우선순위가 낮아진 시간 >= BOOST_Time이면 부스팅
             if (prev == NULL) {
                 from->head = next;
             }
@@ -171,10 +173,10 @@ void boostProcesses(Queue* from, Queue* q1, int current_time) {
                 from->tail = prev;
             }
 
-            curr->queue_level = 1;
-            curr->quantum_used = 0;
+            curr->queue_level = 1; //레벨을 1로 올림
+            curr->quantum_used = 0; //타임슬라이스 소모 시간도 초기화
             curr->next = NULL;
-            curr->entered_queue_time = current_time;
+            curr->entered_queue_time = current_time; //큐를 옮긴 시간도 초기화
             enqueue(q1, curr);
         }
         else {
@@ -189,11 +191,12 @@ void boostProcesses(Queue* from, Queue* q1, int current_time) {
 void admitArrivals(Process* processes[], int n, Queue* q1, int current_time) {
     int i;
     for (i = 0; i < n; i++) {
-        if (!processes[i]->admitted && processes[i]->arrival_time <= current_time) { //admitted하지 않은 상태(도착X)이고, 도착시간이 현재시간보다 작거나 같으면(새롭게 도착하면)
+        if (!processes[i]->admitted && processes[i]->arrival_time <= current_time) { 
+            //admitted하지 않은 상태(도착X)이고, 도착시간이 현재시간보다 작거나 같으면(새롭게 도착하면)
             processes[i]->admitted = 1; //도착 상태 활성화
             processes[i]->queue_level = 1; //레벨은 일단 1로 삽입
             processes[i]->quantum_used = 0; //사용한 시간은 0으로 설정
-            processes[i]->entered_queue_time = current_time;
+            processes[i]->entered_queue_time = current_time; //q가 변경된 시간 초기화
             enqueue(q1, processes[i]);
         }
     }
