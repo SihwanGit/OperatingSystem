@@ -1,0 +1,2 @@
+﻿  PMMD.c
+C:\Users\SAMSUNG\OneDrive\바탕 화면\4-1 수업\운영체제\실습\2차 실습\threadProgramming 실습\PMMD.c(2,9): fatal error C1083: 포함 파일을 열 수 없습니다. 'pthread.h': No such file or directory
